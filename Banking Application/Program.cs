@@ -15,7 +15,7 @@ namespace Banking_Application
 
             do
             {
-
+                Console.WriteLine("");
                 Console.WriteLine("");
                 Console.WriteLine("***Banking Application Menu***");
                 Console.WriteLine("1. Add Bank Account");
