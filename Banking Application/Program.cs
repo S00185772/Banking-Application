@@ -2,6 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 
+
+[assembly: System.Runtime.CompilerServices.DisablePrivateReflection]
+
+
 namespace Banking_Application
 {
     public class Program
@@ -15,7 +19,7 @@ namespace Banking_Application
 
             do
             {
-                Console.WriteLine("");
+                
                 Console.WriteLine("");
                 Console.WriteLine("***Banking Application Menu***");
                 Console.WriteLine("1. Add Bank Account");

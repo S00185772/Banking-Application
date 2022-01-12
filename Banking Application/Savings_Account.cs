@@ -4,9 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+
+
+
 namespace Banking_Application
 {
-    public class Savings_Account: Bank_Account
+    public sealed class Savings_Account: Bank_Account
     {
 
         public double interestRate;
