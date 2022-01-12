@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Data.Sqlite;
-
+using static Banking_Application.Program;
 
 
 namespace Banking_Application
@@ -91,7 +91,7 @@ namespace Banking_Application
                         {
                             Current_Account ca = new Current_Account();
                             ca.accountNo = dr.GetString(0);
-                            ca.name = dr.GetString(1);
+                            ca.name = Encode(dr.GetString(1));
                             ca.address_line_1 = dr.GetString(2);
                             ca.address_line_2 = dr.GetString(3);
                             ca.address_line_3 = dr.GetString(4);
@@ -104,7 +104,7 @@ namespace Banking_Application
                         {
                             Savings_Account sa = new Savings_Account();
                             sa.accountNo = dr.GetString(0);
-                            sa.name = dr.GetString(1);
+                            sa.name = Encode(dr.GetString(1));
                             sa.address_line_1 = dr.GetString(2);
                             sa.address_line_2 = dr.GetString(3);
                             sa.address_line_3 = dr.GetString(4);

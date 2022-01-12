@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-
+using System.Security.Cryptography;
+using System.Text;
 
 [assembly: System.Runtime.CompilerServices.DisablePrivateReflection]
 
@@ -13,6 +14,9 @@ namespace Banking_Application
         public static void Main(string[] args)
         {
             
+              
+
+
             Data_Access_Layer dal = Data_Access_Layer.getInstance();
             dal.loadBankAccounts();
             bool running = true;
@@ -54,7 +58,8 @@ namespace Banking_Application
 
                         } while (!(accountType.Equals("1") || accountType.Equals("2")));
 
-                        String name = "";
+                        String tempname = "";
+                        byte[] name;
                         loopCount = 0;
 
                         do
@@ -64,11 +69,13 @@ namespace Banking_Application
                                 Console.WriteLine("INVALID NAME ENTERED - PLEASE TRY AGAIN");
 
                             Console.WriteLine("Enter Name: ");
-                            name = Console.ReadLine();
+                            tempname = Console.ReadLine();
 
                             loopCount++;
 
-                        } while (name.Equals(""));
+                        } while (tempname.Equals(""));
+
+                         name = Encode(tempname);
 
                         String addressLine1 = "";
                         loopCount = 0;
@@ -349,5 +356,126 @@ namespace Banking_Application
 
         }
 
+        public static string test(string text1)
+        {
+
+            string text = text1;//16 Bytes
+            byte[] protected_byte_array = Encoding.ASCII.GetBytes(text);
+            Console.WriteLine("Plaintext (ASCII Encoded Text): " + text);
+            Console.WriteLine("Plaintext (ASCII Encoded Byte Array): [{0}]", string.Join(", ", protected_byte_array));
+            Console.WriteLine("");
+
+            //Protect Data
+
+            Protect(ref protected_byte_array);
+            //ProtectedMemory.Protect(protected_byte_array, MemoryProtectionScope.SameProcess);//Protect/Encrypt Data
+            Console.WriteLine("Protected/Encrypted Data (Byte Array): [{0}]", string.Join(", ", protected_byte_array));
+            Console.WriteLine("Protected/Encrypted Data (Base64 Encoding): " + Convert.ToBase64String(protected_byte_array));
+            Console.WriteLine("");
+
+            //Unprotect Data
+
+            Unprotect(ref protected_byte_array);
+            //ProtectedMemory.Unprotect(protected_byte_array, MemoryProtectionScope.SameProcess);//Unprotect/Decrypt Data
+            Console.WriteLine("Unprotected/Decrypted (Byte Array): [{0}]", string.Join(", ", protected_byte_array));
+            text = Encoding.ASCII.GetString(protected_byte_array);
+            Console.WriteLine("Re-Encoded ASCII String From Protected Byte Array: " + text);
+            Console.WriteLine("");
+           
+            Console.ReadLine();
+            return text;
+
+            //Pause Application To Show Output On Screen
+
+
+
+
+
+        }
+
+        public static byte[] Encode(string stringtoEncode)
+        {
+            string text = stringtoEncode;//16 Bytes
+            byte[] protected_byte_array = Encoding.ASCII.GetBytes(text);
+
+            Protect(ref protected_byte_array);
+
+            return protected_byte_array;
+        }
+
+        public static string Decode(byte[] bytetoDecode)
+        {
+
+            Unprotect(ref bytetoDecode);
+            
+           string text = Encoding.ASCII.GetString(bytetoDecode);
+
+           
+
+            return text;
+        }
+
+
+
+        public static void Protect(ref byte[] dataToProtect)
+        {
+
+            /*Step 1: Pad Data (PKCS7)*/
+
+            long lengthOfOriginalDataInBytes = dataToProtect.Length;
+            byte paddedBytesRequired = (byte)(16 - (lengthOfOriginalDataInBytes % 16));//No Of Bytes Required To Pad Byte Length Of Data Up To A Multiple Of 16 (Required To Use The ProtectedMemory.Protect() Method). 
+
+            if (paddedBytesRequired == 0)//0=> Original Data Is Already A Multiple Of 16 Bytes Bytes => Full Padded Block Is Required (16 Bytes)
+            {
+                paddedBytesRequired = 16;
+                lengthOfOriginalDataInBytes += 16;//16 Extra Padded Bytes Are Added As The Original Data Was A Multiple Of 16.
+            }
+
+            byte[] paddedDataToProtect = new byte[lengthOfOriginalDataInBytes + paddedBytesRequired];//Byte Array To Hold The Original Data Along With The Padded Data.
+
+            Buffer.BlockCopy(dataToProtect, 0, paddedDataToProtect, 0, dataToProtect.Length);//Copy The Original Data To The New Byte Array That Has Room For The Padding.
+
+            //Add In The Padded Data
+
+            for (long i = dataToProtect.Length; i < paddedDataToProtect.Length; i++)//Assign The Same Value To Each Padded Byte (PKCS7)
+                paddedDataToProtect[i] = paddedBytesRequired;
+
+            dataToProtect = paddedDataToProtect;//Replace The Unpadded Byte Array With The Padded Byte Array
+
+            /*Step 2: Protect Data*/
+
+            ProtectedMemory.Protect(dataToProtect, MemoryProtectionScope.SameProcess);//Protect/Encrypt The Padded Byte Array
+
+        }
+
+        public static void Unprotect(ref byte[] paddedDataToUnprotect)
+        {
+
+            /*Step 1: Remove Data Protection*/
+
+            ProtectedMemory.Unprotect(paddedDataToUnprotect, MemoryProtectionScope.SameProcess);//Protect/Encrypt Data
+
+            /*Step 2: Remove Data Padding (PKCS7)*/
+
+            byte noOfPaddedBytes = paddedDataToUnprotect[paddedDataToUnprotect.Length - 1];//PKCS7 => The Value In The Last Byte Of The Padded Array Denotes The Number of Padded Bytes.
+            byte[] unpaddedByteArray = new byte[paddedDataToUnprotect.Length - noOfPaddedBytes];//Byte Array To Hold The Original Data After Padding Has Been Removed.
+
+            //Verify That Padding Is Value
+
+            for (long i = (paddedDataToUnprotect.Length - noOfPaddedBytes); i < paddedDataToUnprotect.Length - 1; i++)//For Each Padded Byte (Except The Very Last Byte)
+            {
+
+                if (paddedDataToUnprotect[i] != noOfPaddedBytes)//Verify That Each Padded Byte Has Been Assigned The Same Value As The Last Element In The Padded Byte Array (PKCS7).
+                    throw new CryptographicException("Padding is invalid and cannot be removed.");//If Not Equal, Throw An Exception.
+            }
+
+            Buffer.BlockCopy(paddedDataToUnprotect, 0, unpaddedByteArray, 0, unpaddedByteArray.Length);//Copy The Original Data From The Padded Byte Array To The New, Unpadded Byte Array.
+
+            paddedDataToUnprotect = unpaddedByteArray;//Replace The Padded Byte Array With The Unpadded Byte Array.
+
+        }
     }
+
 }
+
+
