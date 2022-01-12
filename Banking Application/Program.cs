@@ -11,6 +11,7 @@ namespace Banking_Application
 {
     public class Program
     {
+        public static string testtext = "";
         public static void Main(string[] args)
         {
             
@@ -356,29 +357,30 @@ namespace Banking_Application
 
         }
 
-        public static string test(string text1)
+        public static string Test(string text1 ,byte[] text2 )
         {
 
             string text = text1;//16 Bytes
+            text = Encoding.ASCII.GetString(text2);
             byte[] protected_byte_array = Encoding.ASCII.GetBytes(text);
-            Console.WriteLine("Plaintext (ASCII Encoded Text): " + text);
-            Console.WriteLine("Plaintext (ASCII Encoded Byte Array): [{0}]", string.Join(", ", protected_byte_array));
+            Console.WriteLine("Plaintext (ASCII Encoded Text): " + text2);
+            Console.WriteLine("Plaintext (ASCII Encoded Byte Array): [{0}]", string.Join(", ", text2));
             Console.WriteLine("");
 
             //Protect Data
 
-            Protect(ref protected_byte_array);
+            Protect(ref text2);
             //ProtectedMemory.Protect(protected_byte_array, MemoryProtectionScope.SameProcess);//Protect/Encrypt Data
-            Console.WriteLine("Protected/Encrypted Data (Byte Array): [{0}]", string.Join(", ", protected_byte_array));
-            Console.WriteLine("Protected/Encrypted Data (Base64 Encoding): " + Convert.ToBase64String(protected_byte_array));
+            Console.WriteLine("Protected/Encrypted Data (Byte Array): [{0}]", string.Join(", ", text2));
+            Console.WriteLine("Protected/Encrypted Data (Base64 Encoding): " + Convert.ToBase64String(text2));
             Console.WriteLine("");
 
             //Unprotect Data
 
-            Unprotect(ref protected_byte_array);
+            Unprotect(ref text2);
             //ProtectedMemory.Unprotect(protected_byte_array, MemoryProtectionScope.SameProcess);//Unprotect/Decrypt Data
-            Console.WriteLine("Unprotected/Decrypted (Byte Array): [{0}]", string.Join(", ", protected_byte_array));
-            text = Encoding.ASCII.GetString(protected_byte_array);
+            Console.WriteLine("Unprotected/Decrypted (Byte Array): [{0}]", string.Join(", ", text2));
+            text = Encoding.ASCII.GetString(text2);
             Console.WriteLine("Re-Encoded ASCII String From Protected Byte Array: " + text);
             Console.WriteLine("");
            
@@ -393,12 +395,50 @@ namespace Banking_Application
 
         }
 
+        public static string Encoder(string text1, byte[] text2)
+        {
+
+            string text = text1;//16 Bytes
+            text = Encoding.ASCII.GetString(text2);
+            byte[] protected_byte_array = Encoding.ASCII.GetBytes(text);
+            Console.WriteLine("Plaintext (ASCII Encoded Text): " + text);
+            Console.WriteLine("Plaintext (ASCII Encoded Byte Array): [{0}]", string.Join(", ", text));
+            Console.WriteLine("");
+
+            //Protect Data
+
+            Protect(ref text2);
+            //ProtectedMemory.Protect(protected_byte_array, MemoryProtectionScope.SameProcess);//Protect/Encrypt Data
+            Console.WriteLine("Protected/Encrypted Data (Byte Array): [{0}]", string.Join(", ", text));
+            Console.WriteLine("Protected/Encrypted Data (Base64 Encoding): " + Convert.ToBase64String(text2));
+            Console.WriteLine("");
+
+            //Unprotect Data
+
+            Unprotect(ref text2);           
+            //ProtectedMemory.Unprotect(protected_byte_array, MemoryProtectionScope.SameProcess);//Unprotect/Decrypt Data
+            Console.WriteLine("Unprotected/Decrypted (Byte Array): [{0}]", string.Join(", ", text));
+            text = Encoding.ASCII.GetString(text2);
+            Console.WriteLine("Re-Encoded ASCII String From Protected Byte Array: " + text);
+            Console.WriteLine("");
+
+            Console.ReadLine();
+            return text;
+
+            //Pause Application To Show Output On Screen
+
+
+
+
+
+        }
+
         public static byte[] Encode(string stringtoEncode)
         {
-            string text = stringtoEncode;//16 Bytes
-            byte[] protected_byte_array = Encoding.ASCII.GetBytes(text);
+            testtext = stringtoEncode;//16 Bytes
+            byte[] protected_byte_array = Encoding.ASCII.GetBytes(testtext);
 
-            Protect(ref protected_byte_array);
+         // Protect(ref protected_byte_array);
 
             return protected_byte_array;
         }
@@ -406,13 +446,13 @@ namespace Banking_Application
         public static string Decode(byte[] bytetoDecode)
         {
 
-            Unprotect(ref bytetoDecode);
+        //    Unprotect(ref bytetoDecode);
             
-           string text = Encoding.ASCII.GetString(bytetoDecode);
+           string testtext = Encoding.ASCII.GetString(bytetoDecode);
 
            
 
-            return text;
+            return testtext;
         }
 
 

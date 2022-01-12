@@ -91,7 +91,7 @@ namespace Banking_Application
                         {
                             Current_Account ca = new Current_Account();
                             ca.accountNo = dr.GetString(0);
-                            ca.name = Encode(dr.GetString(1));
+                            ca.name = Encoding.ASCII.GetBytes(dr.GetString(1));
                             ca.address_line_1 = dr.GetString(2);
                             ca.address_line_2 = dr.GetString(3);
                             ca.address_line_3 = dr.GetString(4);

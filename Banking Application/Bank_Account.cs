@@ -55,18 +55,17 @@ namespace Banking_Application
 
         public override String ToString()
         {
-            string test = "";
-            test = Decode(name);
+            string test1 = "";
+            test1 = Decode(name);
             return "\nAccount No: " + accountNo + "\n" +
             // "Name: " + name + "\n" +
             ("Name Encoded: " + string.Join(", ", name)) + "\n" +
-           
             "Address Line 1: " + address_line_1 + "\n" +
             "Address Line 2: " + address_line_2 + "\n" +
             "Address Line 3: " + address_line_3 + "\n" +
             "Town: " + town + "\n" +
             "Balance: " + balance + "\n"+
-            "Decoded Name" + test; ;
+            "Decoded Name " + Test("tom",name) + "\n"; 
 
         }
 
