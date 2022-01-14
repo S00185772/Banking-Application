@@ -60,7 +60,8 @@ namespace Banking_Application
                         } while (!(accountType.Equals("1") || accountType.Equals("2")));
 
                         String tempname = "";
-                        byte[] name;
+                        //byte[] name;
+                        String name;
                         loopCount = 0;
 
                         do
@@ -76,7 +77,29 @@ namespace Banking_Application
 
                         } while (tempname.Equals(""));
 
-                         name = Encode(tempname);
+                         name = Encode2(tempname);
+
+                        
+                        String password = "";
+                        loopCount = 0;
+
+                        do
+                        {
+
+                            if (loopCount > 0)
+                                Console.WriteLine("INVALID password ENTERED - PLEASE TRY AGAIN");
+
+                            Console.WriteLine("Enter Password: ");
+                            password = Console.ReadLine();
+
+
+                           
+                            loopCount++;
+
+                        } while (password.Equals(""));
+
+                        
+                        password = Encode2(password);
 
                         String addressLine1 = "";
                         loopCount = 0;
@@ -94,11 +117,23 @@ namespace Banking_Application
 
                         } while (addressLine1.Equals(""));
 
+                        addressLine1 = Encode2(addressLine1);
+
                         Console.WriteLine("Enter Address Line 2: ");
                         String addressLine2 = Console.ReadLine();
+                        if (addressLine2 != null)
+                        {
+                            addressLine2 = Encode2(addressLine2);
+                        }
+                        
                         
                         Console.WriteLine("Enter Address Line 3: ");
                         String addressLine3 = Console.ReadLine();
+
+                        if (addressLine3 != null)
+                        {
+                            addressLine3 = Encode2(addressLine3);
+                        }
 
                         String town = "";
                         loopCount = 0;
@@ -115,6 +150,9 @@ namespace Banking_Application
                             loopCount++;
 
                         } while (town.Equals(""));
+
+                        town = Encode2(town);
+
 
                         double balance = -1;
                         loopCount = 0;
@@ -168,7 +206,9 @@ namespace Banking_Application
 
                             } while (overdraftAmount < 0);
 
-                            ba = new Current_Account(name, addressLine1, addressLine2, addressLine3, town, balance, overdraftAmount);
+                          //  Console.WriteLine(password + " Entered");
+
+                            ba = new Current_Account(name,password, addressLine1, addressLine2, addressLine3, town, balance, overdraftAmount);
                         }
 
                         else
@@ -198,19 +238,21 @@ namespace Banking_Application
 
                             } while (interestRate < 0);
 
-                            ba = new Savings_Account(name, addressLine1, addressLine2, addressLine3, town, balance, interestRate);
+                            ba = new Savings_Account(name,password, addressLine1, addressLine2, addressLine3, town, balance, interestRate);
                         }
 
                         String accNo = dal.addBankAccount(ba);
-
+                        String passwordEntered = "";
                         Console.WriteLine("New Account Number Is: " + accNo);
 
                         break;
                     case "2":
                         Console.WriteLine("Enter Account Number: ");
                         accNo = Console.ReadLine();
+                        //Console.WriteLine("Enter Account Password: ");
+                        // passwordEntered = Console.ReadLine();
 
-                        ba = dal.findBankAccountByAccNo(accNo);
+                        ba = dal.findBankAccountByAccNo(accNo/*,passwordEntered*/);
 
                         if (ba is null)
                         {
@@ -247,8 +289,10 @@ namespace Banking_Application
                     case "3":
                         Console.WriteLine("Enter Account Number: ");
                         accNo = Console.ReadLine();
+                        //Console.WriteLine("Enter Account Password: ");
+                        //passwordEntered = Console.ReadLine();
 
-                        ba = dal.findBankAccountByAccNo(accNo);
+                        ba = dal.findBankAccountByAccNo(accNo/*passwordEntered*/);
 
                         if(ba is null) 
                         {
@@ -263,8 +307,10 @@ namespace Banking_Application
                     case "4": //Lodge
                         Console.WriteLine("Enter Account Number: ");
                         accNo = Console.ReadLine();
+                        //Console.WriteLine("Enter Account Password: ");
+                        //passwordEntered = Console.ReadLine();
 
-                        ba = dal.findBankAccountByAccNo(accNo);
+                        ba = dal.findBankAccountByAccNo(accNo/*,passwordEntered*/);
 
                         if (ba is null)
                         {
@@ -302,8 +348,10 @@ namespace Banking_Application
                     case "5": //Withdraw
                         Console.WriteLine("Enter Account Number: ");
                         accNo = Console.ReadLine();
+                        //Console.WriteLine("Enter Account Password: ");
+                        //passwordEntered = Console.ReadLine();
 
-                        ba = dal.findBankAccountByAccNo(accNo);
+                        ba = dal.findBankAccountByAccNo(accNo/*, passwordEntered*/);
 
                         if (ba is null)
                         {
@@ -395,30 +443,30 @@ namespace Banking_Application
 
         }
 
-        public static string Encoder(string text1, byte[] text2)
+        public static string Encoder(string text1/*, byte[] text2*/)
         {
 
             string text = text1;//16 Bytes
-            text = Encoding.ASCII.GetString(text2);
+            //text = Encoding.ASCII.GetString(text);
             byte[] protected_byte_array = Encoding.ASCII.GetBytes(text);
             Console.WriteLine("Plaintext (ASCII Encoded Text): " + text);
-            Console.WriteLine("Plaintext (ASCII Encoded Byte Array): [{0}]", string.Join(", ", text));
+            Console.WriteLine("Plaintext (ASCII Encoded Byte Array): [{0}]", string.Join(", ", protected_byte_array));
             Console.WriteLine("");
 
             //Protect Data
 
-            Protect(ref text2);
+            Protect(ref protected_byte_array);
             //ProtectedMemory.Protect(protected_byte_array, MemoryProtectionScope.SameProcess);//Protect/Encrypt Data
-            Console.WriteLine("Protected/Encrypted Data (Byte Array): [{0}]", string.Join(", ", text));
-            Console.WriteLine("Protected/Encrypted Data (Base64 Encoding): " + Convert.ToBase64String(text2));
+            Console.WriteLine("Protected/Encrypted Data (Byte Array): [{0}]", string.Join(", ", protected_byte_array));
+            Console.WriteLine("Protected/Encrypted Data (Base64 Encoding): " + Convert.ToBase64String(protected_byte_array));
             Console.WriteLine("");
 
             //Unprotect Data
 
-            Unprotect(ref text2);           
+            Unprotect(ref protected_byte_array);
             //ProtectedMemory.Unprotect(protected_byte_array, MemoryProtectionScope.SameProcess);//Unprotect/Decrypt Data
-            Console.WriteLine("Unprotected/Decrypted (Byte Array): [{0}]", string.Join(", ", text));
-            text = Encoding.ASCII.GetString(text2);
+            Console.WriteLine("Unprotected/Decrypted (Byte Array): [{0}]", string.Join(", ", protected_byte_array));
+            text = Encoding.ASCII.GetString(protected_byte_array);
             Console.WriteLine("Re-Encoded ASCII String From Protected Byte Array: " + text);
             Console.WriteLine("");
 
@@ -426,11 +474,6 @@ namespace Banking_Application
             return text;
 
             //Pause Application To Show Output On Screen
-
-
-
-
-
         }
 
         public static byte[] Encode(string stringtoEncode)
@@ -442,6 +485,55 @@ namespace Banking_Application
 
             return protected_byte_array;
         }
+
+        public static string Encode2(string stringToEncode)
+        {
+            string text2 = stringToEncode;//16 Bytes
+                                         //byte[] protected_byte_array2 = { 83, 121, 115, 116, 101, 109, 46, 66, 121, 116, 101, 91, 93, 3, 3, 3 };
+            byte[] protected_byte_array = Encoding.ASCII.GetBytes(text2);
+            // protected_byte_array2 = {83, 121, 115, 116, 101, 109, 46, 66, 121, 116, 101, 91, 93, 3, 3, 3};
+
+          //  Console.WriteLine("Plaintext (ASCII Encoded Text): " + text2);
+          //  Console.WriteLine("Plaintext (ASCII Encoded Byte Array): [{0}]", string.Join(", ", protected_byte_array));
+           // Console.WriteLine("");
+
+            //Protect Data
+
+            Protect(ref protected_byte_array);
+            //ProtectedMemory.Protect(protected_byte_array, MemoryProtectionScope.SameProcess);//Protect/Encrypt Data
+          //  Console.WriteLine("Protected/Encrypted Data (Byte Array): [{0}]", string.Join(", ", protected_byte_array));
+          //  Console.WriteLine("Protected/Encrypted Data (Base64 Encoding): " + Convert.ToBase64String(protected_byte_array));
+           // Console.WriteLine("");
+            string text3 = Convert.ToBase64String(protected_byte_array);
+           // Console.WriteLine("Name Protected IN STRING : " + text3);
+
+            return text3;  
+        }
+
+        public static string Decode2(ref string stringToEncode)
+        {
+
+            //    Unprotect(ref bytetoDecode);
+
+            
+
+            byte[] protected_byte_array = Convert.FromBase64String(stringToEncode);
+
+          //Console.WriteLine("Name Protected IN STRING (Base64 Encoding): " + Convert.ToBase64String(protected_byte_array));
+
+           Unprotect(ref protected_byte_array);
+            
+            //ProtectedMemory.Unprotect(protected_byte_array, MemoryProtectionScope.SameProcess);//Unprotect/Decrypt Data
+           // Console.WriteLine("Unprotected/Decrypted (Byte Array): [{0}]", string.Join(", ", protected_byte_array));
+            string stringToEncode2 = Encoding.ASCII.GetString(protected_byte_array);
+           // Console.WriteLine("Re-Encoded ASCII String From Protected Byte Array2: " + stringToEncode2);
+           // Console.WriteLine("");
+
+           // Console.ReadLine();
+
+            return stringToEncode2;
+        }
+
 
         public static string Decode(byte[] bytetoDecode)
         {

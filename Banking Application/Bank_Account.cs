@@ -14,7 +14,8 @@ namespace Banking_Application
     {
 
         public String accountNo;
-        public byte[] name;
+        public String name;
+        public String password;
         public String address_line_1;
         public String address_line_2;
         public String address_line_3;
@@ -26,10 +27,11 @@ namespace Banking_Application
 
         }
 
-        public Bank_Account(byte[] name, String address_line_1, String address_line_2, String address_line_3, String town, double balance)
+        public Bank_Account(String name, String password, String address_line_1, String address_line_2, String address_line_3, String town, double balance)
         {
             this.accountNo = System.Guid.NewGuid().ToString();
             this.name = name;
+            this.password = password;
             this.address_line_1 = address_line_1;
             this.address_line_2 = address_line_2;
             this.address_line_3 = address_line_3;
@@ -56,16 +58,21 @@ namespace Banking_Application
         public override String ToString()
         {
             string test1 = "";
-            test1 = Decode(name);
+            //  name = Encode2(name);
+            // name = Decode2(ref name);
+            //   address_line_1 = ;
+            //test1 = Decode(name);
             return "\nAccount No: " + accountNo + "\n" +
-            // "Name: " + name + "\n" +
-            ("Name Encoded: " + string.Join(", ", name)) + "\n" +
-            "Address Line 1: " + address_line_1 + "\n" +
-            "Address Line 2: " + address_line_2 + "\n" +
-            "Address Line 3: " + address_line_3 + "\n" +
-            "Town: " + town + "\n" +
-            "Balance: " + balance + "\n"+
-            "Decoded Name " + Test("tom",name) + "\n"; 
+             "Name: " + Decode2(ref name) + "\n" +
+             //Password Not Displaying
+           "Password: " + Decode2(ref password) + "\n" +  
+            // ("Name Encoded: " + string.Join(", ", name)) + "\n" +
+            "Address Line 1: " + Decode2(ref address_line_1) + "\n" +
+            "Address Line 2: " + Decode2(ref address_line_2) + "\n" +
+            "Address Line 3: " + Decode2(ref address_line_3) + "\n" +
+            "Town: " + Decode2(ref town) + "\n" +
+            "Balance: " + balance + "\n" ;
+            //"Decoded Name " + Test("tom",name) + "\n"; 
 
         }
 

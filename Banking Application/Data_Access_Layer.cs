@@ -52,6 +52,7 @@ namespace Banking_Application
                     CREATE TABLE IF NOT EXISTS Bank_Accounts(    
                         accountNo TEXT PRIMARY KEY,
                         name TEXT NOT NULL,
+                        password TEXT NOT NULL,
                         address_line_1 TEXT,
                         address_line_2 TEXT,
                         address_line_3 TEXT,
@@ -91,12 +92,13 @@ namespace Banking_Application
                         {
                             Current_Account ca = new Current_Account();
                             ca.accountNo = dr.GetString(0);
-                            ca.name = Encoding.ASCII.GetBytes(dr.GetString(1));
-                            ca.address_line_1 = dr.GetString(2);
-                            ca.address_line_2 = dr.GetString(3);
-                            ca.address_line_3 = dr.GetString(4);
-                            ca.town = dr.GetString(5);
-                            ca.balance = dr.GetDouble(6);
+                            ca.name = (dr.GetString(1));
+                            ca.password = dr.GetString(2);
+                            ca.address_line_1 = (dr.GetString(3));
+                            ca.address_line_2 = dr.GetString(4);
+                            ca.address_line_3 = dr.GetString(5);
+                            ca.town = dr.GetString(6);
+                            ca.balance = dr.GetDouble(7);
                             ca.overdraftAmount = dr.GetDouble(8);
                             accounts.Add(ca);
                         }
@@ -104,13 +106,14 @@ namespace Banking_Application
                         {
                             Savings_Account sa = new Savings_Account();
                             sa.accountNo = dr.GetString(0);
-                            sa.name = Encode(dr.GetString(1));
-                            sa.address_line_1 = dr.GetString(2);
-                            sa.address_line_2 = dr.GetString(3);
-                            sa.address_line_3 = dr.GetString(4);
-                            sa.town = dr.GetString(5);
-                            sa.balance = dr.GetDouble(6);
-                            sa.interestRate = dr.GetDouble(9);
+                            sa.name = dr.GetString(1);
+                            sa.password = dr.GetString(2);
+                            sa.address_line_1 = dr.GetString(3);
+                            sa.address_line_2 = dr.GetString(4);
+                            sa.address_line_3 = dr.GetString(5);
+                            sa.town = dr.GetString(6);
+                            sa.balance = dr.GetDouble(7);
+                            sa.interestRate = dr.GetDouble(8);
                             accounts.Add(sa);
                         }
 
@@ -141,6 +144,7 @@ namespace Banking_Application
                     INSERT INTO Bank_Accounts VALUES(" +
                     "'" + ba.accountNo + "', " +
                     "'" + ba.name + "', " +
+                    "'" + ba.password + "', " +
                     "'" + ba.address_line_1 + "', " +
                     "'" + ba.address_line_2 + "', " +
                     "'" + ba.address_line_3 + "', " +
@@ -168,13 +172,13 @@ namespace Banking_Application
 
         }
 
-        public Bank_Account findBankAccountByAccNo(String accNo) 
+        public Bank_Account findBankAccountByAccNo(String accNo/*, String correctpassword*/) 
         { 
         
             foreach(Bank_Account ba in accounts)
             {
 
-                if (ba.accountNo.Equals(accNo))
+                if (ba.accountNo.Equals(accNo) /*&& ba.password.Equals(correctpassword)*/)
                 {
                     return ba;
                 }
